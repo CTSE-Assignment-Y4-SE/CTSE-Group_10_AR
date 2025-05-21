@@ -1,88 +1,168 @@
 <!DOCTYPE html>
 <html>
+<head>
   <meta charset="utf-8" />
-  <head>
-    <title>AR Fountain - Vithanage H.D</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
-  </head>
-  <body style="margin: 0; overflow: hidden">
-    <a-scene
-      embedded
-      arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-    >
-      <a-assets>
-        <a-asset-item id="fountain-model" src="fountain.glb"></a-asset-item>
-        <img id="mist-texture" src="mist.png" />
-        <audio id="water-sound" src="water.mp3"></audio>
-      </a-assets>
+  <title>AR Fountain - Vithanage H.D</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
+  <style>
+    #ui-panel {
+      position: fixed; top: 10px; left: 10px; z-index: 10001;
+      background: rgba(0, 0, 0, 0.78); color: white; padding: 16px;
+      border-radius: 14px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      font-family: 'Segoe UI', sans-serif; width: 260px; pointer-events: auto; user-select: none;
+    }
+    .model-btn {
+      background: #8fff77; border: none; padding: 7px 12px;
+      margin-right: 5px; margin-bottom: 5px; color: black;
+      font-weight: bold; border-radius: 7px; cursor: pointer; font-size: 15px;
+    }
+    .model-btn:hover { background: #6ddb4c; }
+    #infoPanel { display: none; background: #222; padding: 10px; border-radius: 8px; margin-top: 12px; }
+    #infoPanel.show { display: block; }
+    #panel-toggle-btn {
+      position: fixed; top: 10px; left: 10px; z-index: 10010;
+      background: #8fff77; color: black; font-weight: bold;
+      border: none; border-radius: 12px; padding: 10px 16px;
+      font-size: 20px; cursor: pointer; opacity: 0.96;
+    }
+    .footer-note {
+      margin-top: 10px; font-size: 13px; opacity: 0.7;
+    }
+    #loader {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: #000a; color: white; font-size: 24px;
+      z-index: 10002;
+    }
+  </style>
+</head>
 
-      <a-marker type="barcode" value="5">
-        <!-- Fountain Model with pulsing effect -->
-        <a-entity
-          id="fountain"
-          gltf-model="#fountain-model"
-          scale="0.15 0.15 0.15"
-          position="0 -1 0"
-          rotation="0 180 0"
-          animation="property: scale; dir: alternate; dur: 1000; loop: true; to: 0.18 0.18 0.18"
-        >
-        </a-entity>
-        <!-- Mist Splash Effect -->
-        <a-plane
-          src="#mist-texture"
-          position="0 -0.2 0.1"
-          rotation="-90 0 0"
-          scale="1.5 1.5 1.5"
-          transparent="true"
-          opacity="0.7"
-          animation="property: position; from: 0 -0.2 0.1; to: 0 0.2 0.1; dur: 1800; dir: alternate; loop: true"
-        ></a-plane>
-        <!-- Mist Layer 2 - Offset + rotation for swirling -->
-        <a-plane
-          src="#mist-texture"
-          position="0.2 -0.2 0"
-          rotation="-90 0 0"
-          scale="1.2 1.2 1.2"
-          transparent="true"
-          opacity="0.5"
-          animation__rise="property: position; from: 0.2 -0.2 0; to: 0.2 0.2 0; dur: 2500; dir: alternate; loop: true"
-          animation__spin="property: rotation; from: -90 0 0; to: -90 360 0; dur: 8000; loop: true"
-        ></a-plane>
+<body style="margin: 0; overflow: hidden">
+  <!-- Loader Screen -->
+  <div id="loader">Loading Fountain Model...</div>
 
-        <!-- Mist Layer 3 - Opposite side, mirrored motion -->
-        <a-plane
-          src="#mist-texture"
-          position="-0.2 -0.2 0"
-          rotation="-90 0 0"
-          scale="1.4 1.4 1.4"
-          transparent="true"
-          opacity="0.5"
-          animation__rise="property: position; from: -0.2 -0.2 0; to: -0.2 0.2 0; dur: 2200; dir: alternate; loop: true"
-          animation__spin="property: rotation; from: -90 0 0; to: -90 -360 0; dur: 7000; loop: true"
-        ></a-plane>
+  <a-scene
+    embedded
+    arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+  >
+    <a-assets>
+      <a-asset-item id="fountain-model" src="fountain.glb"></a-asset-item>
+      <img id="mist-texture" src="mist.png" />
+      <audio id="water-sound" src="water.mp3"></audio>
+    </a-assets>
 
-        <!-- Water Sound -->
-        <a-sound
-          src="water.mp3"
-          autoplay="true"
-          loop="true"
-          position="0 1 0"
-        ></a-sound>
-      </a-marker>
-      <a-entity camera></a-entity>
-    </a-scene>
-    <button
-      onclick="document.querySelector('a-sound').components.sound.playSound()"
-      style="
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 999;
-        font-size: 16px;
-      "
-    >
-      🔊 Play Water Sound
-    </button>
-  </body>
+    <a-marker type="barcode" value="5">
+      <!-- Fountain -->
+      <a-entity
+        id="fountain"
+        gltf-model="#fountain-model"
+        scale="0.15 0.15 0.15"
+        position="0 -1 0"
+        rotation="0 180 0"
+        animation__pulse="property: scale; dir: alternate; dur: 1000; loop: true; to: 0.18 0.18 0.18"
+      ></a-entity>
+
+      <!-- Mist Layers -->
+      <a-plane src="#mist-texture" position="0 -0.2 0.1" rotation="-90 0 0" scale="1.5 1.5 1.5"
+        transparent="true" opacity="0.7"
+        animation="property: position; from: 0 -0.2 0.1; to: 0 0.2 0.1; dur: 1800; dir: alternate; loop: true"></a-plane>
+
+      <a-plane src="#mist-texture" position="0.2 -0.2 0" rotation="-90 0 0" scale="1.2 1.2 1.2"
+        transparent="true" opacity="0.5"
+        animation__rise="property: position; from: 0.2 -0.2 0; to: 0.2 0.2 0; dur: 2500; dir: alternate; loop: true"
+        animation__spin="property: rotation; from: -90 0 0; to: -90 360 0; dur: 8000; loop: true"></a-plane>
+
+      <a-plane src="#mist-texture" position="-0.2 -0.2 0" rotation="-90 0 0" scale="1.4 1.4 1.4"
+        transparent="true" opacity="0.5"
+        animation__rise="property: position; from: -0.2 -0.2 0; to: -0.2 0.2 0; dur: 2200; dir: alternate; loop: true"
+        animation__spin="property: rotation; from: -90 0 0; to: -90 -360 0; dur: 7000; loop: true"></a-plane>
+
+      <a-sound id="fountainSound" src="water.mp3" autoplay="false" loop="true" position="0 1 0"></a-sound>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- Panel Toggle Button -->
+  <button id="panel-toggle-btn" title="Show/Hide Control Panel">✖</button>
+
+  <!-- UI Panel -->
+  <div id="ui-panel">
+    <h3>AR Fountain Model</h3>
+    <div style="margin-bottom:10px">
+      <button class="model-btn" id="soundBtn">🌊 Play/Pause Sound</button>
+      <button class="model-btn" id="pulseBtn">⟳ Toggle Pulse</button>
+      <button class="model-btn" id="infoBtn">ℹ️ Info</button>
+      <button class="model-btn" id="hideInfoBtn" style="display:none">Hide Info</button>
+    </div>
+    <div id="infoPanel"></div>
+    <div class="footer-note">Point at the Barcode 5 marker.<br>Use this panel to control the fountain!</div>
+  </div>
+
+  <script>
+    const fountain = document.getElementById('fountain');
+    const sound = document.getElementById('fountainSound');
+    const infoPanel = document.getElementById('infoPanel');
+    const hideInfoBtn = document.getElementById('hideInfoBtn');
+    const uiPanel = document.getElementById('ui-panel');
+    const panelToggleBtn = document.getElementById('panel-toggle-btn');
+    const loader = document.getElementById('loader');
+
+    let pulsing = true;
+
+    // Hide loader once model loads
+    fountain.addEventListener('model-loaded', () => {
+      loader.style.display = 'none';
+    });
+
+    // Sound toggle
+    document.getElementById('soundBtn').addEventListener('click', () => {
+      if (sound && sound.components.sound) {
+        if (sound.components.sound.isPlaying) {
+          sound.components.sound.pauseSound();
+        } else {
+          sound.components.sound.playSound();
+        }
+      }
+    });
+
+    // Pulse toggle
+    document.getElementById('pulseBtn').addEventListener('click', () => {
+      if (pulsing) {
+        fountain.removeAttribute('animation__pulse');
+        fountain.setAttribute('scale', '0.15 0.15 0.15');
+      } else {
+        fountain.setAttribute('animation__pulse', {
+          property: "scale",
+          dir: "alternate",
+          dur: 1000,
+          loop: true,
+          to: "0.18 0.18 0.18"
+        });
+      }
+      pulsing = !pulsing;
+    });
+
+    // Info panel
+    document.getElementById('infoBtn').addEventListener('click', () => {
+      infoPanel.innerHTML = "<strong>AR Fountain:</strong> This animated fountain features mist, sound, and a pulsing effect.<br>Use the controls to toggle effects.";
+      infoPanel.classList.add('show');
+      hideInfoBtn.style.display = '';
+    });
+    hideInfoBtn.addEventListener('click', () => {
+      infoPanel.classList.remove('show');
+      hideInfoBtn.style.display = 'none';
+    });
+
+    // Control panel toggle
+    let panelVisible = true;
+    panelToggleBtn.addEventListener('click', () => {
+      panelVisible = !panelVisible;
+      uiPanel.style.display = panelVisible ? '' : 'none';
+      panelToggleBtn.textContent = panelVisible ? "✖" : "☰";
+      panelToggleBtn.title = panelVisible ? "Hide Control Panel" : "Show Control Panel";
+    });
+  </script>
+</body>
 </html>

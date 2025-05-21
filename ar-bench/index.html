@@ -1,33 +1,154 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Bench AR - Shehani</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
-  </head>
-  <body style="margin: 0; overflow: hidden">
-    <a-scene embedded arjs>
-      <a-assets>
-        <!-- Bench model -->
-        <a-asset-item id="parkbench" src="parkbench.glb"></a-asset-item>
-      </a-assets>
+<head>
+  <meta charset="utf-8" />
+  <title>Bench AR - Shehani</title>
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
 
-      <!-- KANJI marker trigger -->
-      <a-marker preset="kanji">
-        <!-- Animated bouncing bench -->
-        <a-entity
-          gltf-model="#parkbench"
-          position="0.05 0 0"
-          scale="0.03 0.03 0.03"
-          rotation="0 180 0"
-          animation_bounce="property: position; to: 0 0.1 0; dir: alternate; dur: 800; loop: true"
-          animation__rotate="property: rotation; to: 0 360 0; dur: 4000; loop: true; easing: linear"
-        ></a-entity>
+  <style>
+    body { margin: 0; overflow: hidden; }
 
-      </a-marker>
+    #ui-panel {
+      position: fixed; top: 10px; left: 10px; z-index: 10001;
+      background: rgba(0, 0, 0, 0.78); color: white; padding: 16px;
+      border-radius: 14px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      font-family: 'Segoe UI', sans-serif; width: 260px; pointer-events: auto; user-select: none;
+    }
+    .model-btn {
+      background: #8fff77; border: none; padding: 7px 12px;
+      margin-right: 5px; margin-bottom: 5px; color: black;
+      font-weight: bold; border-radius: 7px; cursor: pointer; font-size: 15px;
+    }
+    .model-btn:hover { background: #6ddb4c; }
+    #infoPanel { display: none; background: #222; padding: 10px; border-radius: 8px; margin-top: 12px; }
+    #infoPanel.show { display: block; }
+    #panel-toggle-btn {
+      position: fixed; top: 10px; left: 10px; z-index: 10010;
+      background: #8fff77; color: black; font-weight: bold;
+      border: none; border-radius: 12px; padding: 10px 16px;
+      font-size: 20px; cursor: pointer; opacity: 0.96;
+    }
+    .footer-note {
+      margin-top: 10px; font-size: 13px; opacity: 0.7;
+    }
+    #loader {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: #000a; color: white; font-size: 24px;
+      z-index: 10002;
+    }
+  </style>
+</head>
 
-      <a-entity camera></a-entity>
-    </a-scene>
-  </body>
+<body>
+  <!-- Loader -->
+  <div id="loader">Loading Bench Model...</div>
+
+  <a-scene embedded arjs="sourceType: webcam;">
+    <a-assets>
+      <a-asset-item id="parkbench" src="parkbench.glb"></a-asset-item>
+    </a-assets>
+
+    <a-marker preset="kanji">
+      <a-entity
+        id="bench"
+        gltf-model="#parkbench"
+        position="0.05 0 0"
+        scale="0.03 0.03 0.03"
+        rotation="0 180 0"
+        animation__bounce="property: position; to: 0 0.1 0; dir: alternate; dur: 800; loop: true"
+        animation__rotate="property: rotation; to: 0 360 0; dur: 4000; loop: true; easing: linear"
+      ></a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <!-- Panel Toggle Button -->
+  <button id="panel-toggle-btn" title="Show/Hide Control Panel">✖</button>
+
+  <!-- Control Panel -->
+  <div id="ui-panel">
+    <h3>AR Bench</h3>
+    <div style="margin-bottom:10px">
+      <button class="model-btn" id="spinBtn">⟳ Toggle Spin</button>
+      <button class="model-btn" id="bounceBtn">⬍ Toggle Bounce</button>
+      <button class="model-btn" id="infoBtn">ℹ️ Info</button>
+      <button class="model-btn" id="hideInfoBtn" style="display:none">Hide Info</button>
+    </div>
+    <div id="infoPanel"></div>
+    <div class="footer-note">Point at the Kanji marker.<br>Use this panel to control the bench!</div>
+  </div>
+
+  <script>
+    const bench = document.getElementById('bench');
+    const infoPanel = document.getElementById('infoPanel');
+    const hideInfoBtn = document.getElementById('hideInfoBtn');
+    const uiPanel = document.getElementById('ui-panel');
+    const panelToggleBtn = document.getElementById('panel-toggle-btn');
+    const loader = document.getElementById('loader');
+
+    let spinning = true;
+    let bouncing = true;
+
+    // Hide loader after model loads
+    bench.addEventListener('model-loaded', () => {
+      loader.style.display = 'none';
+    });
+
+    // Toggle spin
+    document.getElementById('spinBtn').addEventListener('click', () => {
+      if (spinning) {
+        bench.removeAttribute('animation__rotate');
+      } else {
+        bench.setAttribute('animation__rotate', {
+          property: 'rotation',
+          to: '0 360 0',
+          dur: 4000,
+          loop: true,
+          easing: 'linear'
+        });
+      }
+      spinning = !spinning;
+    });
+
+    // Toggle bounce
+    document.getElementById('bounceBtn').addEventListener('click', () => {
+      if (bouncing) {
+        bench.removeAttribute('animation__bounce');
+      } else {
+        bench.setAttribute('animation__bounce', {
+          property: 'position',
+          to: '0 0.1 0',
+          dir: 'alternate',
+          dur: 800,
+          loop: true
+        });
+      }
+      bouncing = !bouncing;
+    });
+
+    // Info Panel
+    document.getElementById('infoBtn').addEventListener('click', () => {
+      infoPanel.innerHTML = "<strong>AR Bench:</strong> This interactive bench bounces and spins!<br>Use the controls above to play with the animation.";
+      infoPanel.classList.add('show');
+      hideInfoBtn.style.display = '';
+    });
+    hideInfoBtn.addEventListener('click', () => {
+      infoPanel.classList.remove('show');
+      hideInfoBtn.style.display = 'none';
+    });
+
+    // Toggle panel
+    let panelVisible = true;
+    panelToggleBtn.addEventListener('click', () => {
+      panelVisible = !panelVisible;
+      uiPanel.style.display = panelVisible ? '' : 'none';
+      panelToggleBtn.textContent = panelVisible ? "✖" : "☰";
+      panelToggleBtn.title = panelVisible ? "Hide Control Panel" : "Show Control Panel";
+    });
+  </script>
+</body>
 </html>
