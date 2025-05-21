@@ -4,47 +4,78 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CTSE AR Dashboard</title>
+  <link rel="icon" type="image/png" href="ar.png" />
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('ar.png') no-repeat center center fixed;
+      background-size: cover;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      margin: 0;
+      color: white;
+      text-align: center;
     }
-    h1 {
-      margin-bottom: 30px;
+
+    .title {
+      text-shadow: 2px 2px 4px #000;
+      margin-bottom: 10px;
+      font-size: 24px;
     }
+
+    .subtitle {
+      text-shadow: 2px 2px 4px #000;
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 40px;
+    }
+
     .button-container {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 20px;
     }
+
     .ar-button {
-      padding: 15px 30px;
-      font-size: 16px;
-      background-color: #4CAF50;
+      padding: 15px 40px;
+      font-size: 18px;
+      background-color: #007BFF;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.6);
+      transition: transform 0.2s, background-color 0.3s;
     }
+
     .ar-button:hover {
-      background-color: #45a049;
+      background-color: #1e1e1e;
+      transform: scale(1.05);
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 18px;
+      color: #1a1919;
+      text-shadow: 1px 1px 3px #000;
     }
   </style>
 </head>
 <body>
-  <h1>CTSE Group 10 - AR Dashboard</h1>
+  <div class="subtitle">AR Dashboard</div>
+
   <div class="button-container">
     <button class="ar-button" onclick="location.href='ar-park/index.html'">Park AR - HIRO</button>
     <button class="ar-button" onclick="location.href='ar-bench/index.html'">Bench AR - KANJI</button>
     <button class="ar-button" onclick="location.href='fountain_ar/index.html'">Fountain AR - Barcode 5</button>
     <button class="ar-button" onclick="location.href='zoo-ar/index.html'">Zoo AR - Barcode 7</button>
   </div>
+
+  <div class="footer">CTSE Group 10</div>
 </body>
 </html>
