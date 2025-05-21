@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8" />
+  <head>
+    <title>AR Fountain - Vithanage H.D</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden">
+    <a-scene
+      embedded
+      arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    >
+      <a-assets>
+        <a-asset-item id="fountain-model" src="fountain.glb"></a-asset-item>
+        <img id="mist-texture" src="mist.png" />
+        <audio id="water-sound" src="water.mp3"></audio>
+      </a-assets>
+
+      <a-marker type="barcode" value="5">
+        <!-- Fountain Model with pulsing effect -->
+        <a-entity
+          id="fountain"
+          gltf-model="#fountain-model"
+          scale="0.15 0.15 0.15"
+          position="0 -1 0"
+          rotation="0 180 0"
+          animation="property: scale; dir: alternate; dur: 1000; loop: true; to: 0.18 0.18 0.18"
+        >
+        </a-entity>
+        <!-- Mist Splash Effect -->
+        <a-plane
+          src="#mist-texture"
+          position="0 -0.2 0.1"
+          rotation="-90 0 0"
+          scale="1.5 1.5 1.5"
+          transparent="true"
+          opacity="0.7"
+          animation="property: position; from: 0 -0.2 0.1; to: 0 0.2 0.1; dur: 1800; dir: alternate; loop: true"
+        ></a-plane>
+        <!-- Mist Layer 2 - Offset + rotation for swirling -->
+        <a-plane
+          src="#mist-texture"
+          position="0.2 -0.2 0"
+          rotation="-90 0 0"
+          scale="1.2 1.2 1.2"
+          transparent="true"
+          opacity="0.5"
+          animation__rise="property: position; from: 0.2 -0.2 0; to: 0.2 0.2 0; dur: 2500; dir: alternate; loop: true"
+          animation__spin="property: rotation; from: -90 0 0; to: -90 360 0; dur: 8000; loop: true"
+        ></a-plane>
+
+        <!-- Mist Layer 3 - Opposite side, mirrored motion -->
+        <a-plane
+          src="#mist-texture"
+          position="-0.2 -0.2 0"
+          rotation="-90 0 0"
+          scale="1.4 1.4 1.4"
+          transparent="true"
+          opacity="0.5"
+          animation__rise="property: position; from: -0.2 -0.2 0; to: -0.2 0.2 0; dur: 2200; dir: alternate; loop: true"
+          animation__spin="property: rotation; from: -90 0 0; to: -90 -360 0; dur: 7000; loop: true"
+        ></a-plane>
+
+        <!-- Water Sound -->
+        <a-sound
+          src="water.mp3"
+          autoplay="true"
+          loop="true"
+          position="0 1 0"
+        ></a-sound>
+      </a-marker>
+      <a-entity camera></a-entity>
+    </a-scene>
+    <button
+      onclick="document.querySelector('a-sound').components.sound.playSound()"
+      style="
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 999;
+        font-size: 16px;
+      "
+    >
+      🔊 Play Water Sound
+    </button>
+  </body>
+</html>

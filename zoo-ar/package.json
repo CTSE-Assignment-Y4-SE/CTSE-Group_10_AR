@@ -1,0 +1,11 @@
+{
+  "name": "zoo-ar",
+  "version": "1.0.0",
+  "description": "Virtual Zoo AR app using A-Frame + AR.js",
+  "scripts": {
+    "start": "http-server ./ -p 8080"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Bench AR - Shehani</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden">
+    <a-scene embedded arjs>
+      <a-assets>
+        <!-- Bench model -->
+        <a-asset-item id="parkbench" src="parkbench.glb"></a-asset-item>
+      </a-assets>
+
+      <!-- KANJI marker trigger -->
+      <a-marker preset="kanji">
+        <!-- Animated bouncing bench -->
+        <a-entity
+          gltf-model="#parkbench"
+          position="0.05 0 0"
+          scale="0.03 0.03 0.03"
+          rotation="0 180 0"
+          animation_bounce="property: position; to: 0 0.1 0; dir: alternate; dur: 800; loop: true"
+          animation__rotate="property: rotation; to: 0 360 0; dur: 4000; loop: true; easing: linear"
+        ></a-entity>
+
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+  </body>
+</html>
